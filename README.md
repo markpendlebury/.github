@@ -1,6 +1,6 @@
 ## Welcome
 
-This is the **IAG** Organization for IAG to enable collaboration across many projects at once. Owners and administrators can manage member access to the organization's data and projects.
+This is the **IAG** Organization enabling collaboration across many projects at once. Owners and administrators can manage member access to the organization's data and projects.
 
 # Getting started with Git and Github
 
