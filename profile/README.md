@@ -6,7 +6,7 @@ This is the **IAG** Organization enabling collaboration across many projects at 
 
 Some useful labs that are worth following if you are new to Git and GitHub, from [Learning Labs](https://lab.github.com/):
 
-- [First Day on GitHub](https://lab.github.com/githubtraining/first-day-on-github)
-- [First Week on GitHub](https://lab.github.com/githubtraining/first-week-on-github)
+- [First Day on GitHub](https://skills.github.com/#first-day-on-github)
+- [First Week on GitHub](https://skills.github.com/#first-week-on-github)
 
 
