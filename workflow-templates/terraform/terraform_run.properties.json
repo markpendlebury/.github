@@ -1,0 +1,7 @@
+{
+    "name": "Terraform Run",
+    "description": "Runs a Terraform Plan or Apply against an AWS account, assumes the correct role has been assumed above",
+    "categories": [
+        "Terraform"
+    ]
+}
