@@ -19,12 +19,9 @@ jobs:
     outputs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Run Prerequisites
         id: prerequisites
-        uses: ./../IAG-Ent/.github/.github/actions/prerequisites/action.yml@main
+        uses: ./actions/prerequisites/action.yml
   lambda_tests_and_package:
     name: "Run Lambda Tests and Package"
     runs-on: ubuntu-latest
