@@ -34,7 +34,7 @@ on:
       terraform_plan_exitcode:
         description: "Whether changes are needed to the plan"
         value: ${{ steps.plan.outputs.exitcode }}
-        tyoe: string
+        type: string
 
 jobs:
   build:
