@@ -1,0 +1,68 @@
+name: Main Branch Workflow
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  prerequisites:
+    name: "Prerequisites"
+    runs-on: ubuntu-latest
+    environment: dev-ecptest
+    concurrency: dev-ecptest
+    outputs:
+      lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Prerequisites
+        id: prerequisites
+        uses: ./.github/workflows/prerequisites
+  lambda_tests_and_package:
+    name: "Run Lambda Tests and Package"
+    runs-on: ubuntu-latest
+    environment: dev-ecptest
+    concurrency: dev-ecptest
+    needs: prerequisites
+    strategy:
+      matrix:
+        python-version: [ "3.10" ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Lambda Tests and Package
+        uses: ./.github/workflows/lambda_tests_and_package
+        with:
+          lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
+          python_version_matrix: "${{ matrix.python-version  }}"
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          lambda_code_bucket: "ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-lambda-code"
+    
+  terraform_plan:
+    name: "Terraform Plan dev-ecptest"
+    runs-on: ubuntu-latest
+    environment: dev-ecptest
+    concurrency: dev-ecptest
+    needs: 
+      - prerequisites
+      - lambda_tests_and_package
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Terraform
+        uses: ./.github/workflows/terraform_run
+        with:
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          terraform_action: 'plan'
+          terraform_version: 1.5.6
+          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tf_working_dir: terraform

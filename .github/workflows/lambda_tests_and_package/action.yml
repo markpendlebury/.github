@@ -1,0 +1,119 @@
+name: Lambda Tests
+description: Runs a Terraform Plan or Apply against an AWS account, assumes the correct role has been assumed above
+inputs:
+  lambda_names:
+    description: 'List of Lambda names to test'
+    required: true
+  python_version_matrix:
+    description: 'Lst of pythin version'
+    required: true
+  aws_role:
+    description: 'Role to assume'
+    required: true
+  lambda_code_bucket:
+    description: 'Lambda code bucket name'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ inputs.python_version_matrix }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python_version_matrix }}
+
+    - name: Install testing dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install black pytest
+
+        IFS=',' read -ra LAMBDA_MODULES <<< "${{ inputs.lambda_names }}"
+        echo 
+        for module_directory in "${LAMBDA_MODULES[@]}"; do
+          pushd src/${module_directory}
+
+          pwd
+
+          python -m venv venv
+          source venv/bin/activate
+
+          if [[ -f requirements.txt ]]; then
+            pip install -r requirements.txt
+          fi
+
+          if [[ -f test-requirements.txt ]]; then
+            pip install -r test-requirements.txt
+          fi
+          pip list
+
+          deactivate
+
+          popd
+        done
+    - name: Lint with Black
+      shell: bash
+      run: |
+        cd src/${module_directory}
+        black . --check
+    - name: Test with pytest
+      shell: bash
+      run: |
+        IFS=',' read -ra LAMBDA_MODULES <<< "${{ inputs.lambda_names  }}"
+        for module_directory in "${LAMBDA_MODULES[@]}"; do
+          pushd src/${module_directory}
+          pwd 
+          ls
+          echo 
+          if [[ -d 'tests' ]]; then
+            source venv/bin/activate
+            pip list
+            cd tests
+            pwd
+
+            pytest
+
+            deactivate
+          fi
+          popd
+        done
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-region: eu-west-1
+        role-to-assume: ${{ inputs.aws_role }}
+        role-session-name: LambdaPackagingJob
+    - name: Package Lambda Code
+      id: lambda_package
+      shell: bash
+      run: |
+        IFS=',' read -ra LAMBDA_MODULES <<< "${{ inputs.lambda_names  }}"
+        for module_directory in "${LAMBDA_MODULES[@]}"; do
+          module=${module_directory//_/-}
+
+          zip_name="${module_directory}.zip"
+          echo "Packaging with zip name ${zip_name} in src/${module_directory}"
+          mkdir ${module}-dist
+
+          pushd src/${module_directory}
+
+          if [[ -f requirements.txt ]]; then
+            pip install -r requirements.txt --target ../../${module}-dist
+            pip install --platform manylinux2010_x86_64 --implementation cp --only-binary=:all: --upgrade --target ../../${module}-dist cryptography
+          fi
+
+          cp -r . ../../${module}-dist
+
+          pushd ../../${module}-dist
+
+          zip -r ${zip_name} *
+
+          echo "Uploading zip to ${{ inputs.lambda_code_bucket }}"
+          aws s3api put-object --bucket ${{ inputs.lambda_code_bucket }} --key $zip_name --body $zip_name
+
+          popd
+          popd
+        done

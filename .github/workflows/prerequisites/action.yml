@@ -1,0 +1,55 @@
+name: Prerequisites
+description: prerequisites
+
+outputs:
+  ecp_release_version:
+    description: ""
+    value: ${{ steps.prerequisite_variables.outputs.ecp_release_version }}
+  normalized_git_branch:
+    description: ""
+    value: ${{ steps.prerequisite_variables.outputs.normalized_git_branch  }}
+  lambdas_changed:
+    description: ""
+    value: ${{ steps.lambdas_changed.outputs.lambdas_changed }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set variable
+      id: prerequisite_variables
+      shell: bash
+      run: |          
+        ecp_release_version=$(jq -r .ecp_release_version ./metadata.json)
+        echo "ecp_release_version=${ecp_release_version}" >> "$GITHUB_OUTPUT"
+        echo "ECP Release Version: ${ecp_release_version}"
+        normalized_git_branch=$(echo ${{ github.ref_name }} | tr / -)
+        echo "normalized_git_branch=${normalized_git_branch}" >> "$GITHUB_OUTPUT"
+        echo "Normalized Git Branch: ${normalized_git_branch}"
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        list-files: 'escape'
+        filters: |
+          lambda_changes:
+            - 'src/**'
+    - name: Check Lambda changes
+      id: lambdas_changed
+      shell: bash
+      run: |
+        echo "There has been ${{ steps.changes.outputs.lambda_changes_count }} changes to lambdas detected"
+        echo "${{ steps.changes.outputs.lambda_changes_files }}"
+        
+        lambdas_changed=()
+        for file_changed in $(echo "${{ steps.changes.outputs.lambda_changes_files }}" ); do
+          echo $file_changed
+          lambda=$(echo $file_changed | cut -d'/' -f2)
+          echo "${lambdas_changed[@]}" | grep -w "$lambda" || {
+            lambdas_changed+=($lambda)
+          }
+        done
+        lambdas_changed=$(IFS=, ; echo "${lambdas_changed[*]}")
+        echo "lambdas_changed=${lambdas_changed}"
+        echo "lambdas_changed=${lambdas_changed}" >> "$GITHUB_OUTPUT"
