@@ -1,9 +1,11 @@
 name: Main Branch Workflow
 
 on:
-  push:
-    branches-ignore:
-      - "main"
+  workflow_call:
+    inputs:
+      env_name:
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -13,8 +15,8 @@ jobs:
   prerequisites:
     name: "Prerequisites"
     runs-on: ubuntu-latest
-    environment: dev-ecptest
-    concurrency: dev-ecptest
+    environment: ${{ inputs.env_name }}
+    concurrency: ${{ inputs.env_name }}
     outputs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
     steps:
@@ -27,8 +29,8 @@ jobs:
   lambda_tests_and_package:
     name: "Run Lambda Tests and Package"
     runs-on: ubuntu-latest
-    environment: dev-ecptest
-    concurrency: dev-ecptest
+    environment: ${{ inputs.env_name }}
+    concurrency: ${{ inputs.env_name }}
     needs: prerequisites
     strategy:
       matrix:
@@ -48,8 +50,8 @@ jobs:
   terraform_plan:
     name: "Terraform Plan dev-ecptest"
     runs-on: ubuntu-latest
-    environment: dev-ecptest
-    concurrency: dev-ecptest
+    environment: ${{ inputs.env_name }}
+    concurrency: ${{ inputs.env_name }}
     needs: 
       - prerequisites
       - lambda_tests_and_package
