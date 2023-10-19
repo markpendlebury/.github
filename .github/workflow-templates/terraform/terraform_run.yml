@@ -7,23 +7,29 @@ on:
       aws_role:
         description: 'AWS Role to assume to perform Terraform plan'
         required: true
+        type: string
       terraform_action:
         description: 'Terraform action to perform, options are "plan" and "apply"'
         default: 'plan'
         required: true
+        type: string
       terraform_version:
         description: 'Terraform Version'
         default: '1.4.2'
         required: true
+        type: string
       tfstate_bucket:
         description: 'The AWS S3 bucket containing the TF state file'
         required: true
+        type: string
       tfstate_dynamodb_table:
         description: 'The AWS role to assume'
         required: true
+        type: string
       tf_working_dir:
         description: 'The Terraform Directory to run in'
         required: true
+        type: string
     outputs:
       terraform_plan_exitcode:
         description: "Whether changes are needed to the plan"
