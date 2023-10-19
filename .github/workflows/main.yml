@@ -24,7 +24,7 @@ jobs:
 
       - name: Run Prerequisites
         id: prerequisites
-        uses: ./.github/workflows/prerequisites
+        uses: ./IAG-Ent/.github/.github/workflows/prerequisites
   lambda_tests_and_package:
     name: "Run Lambda Tests and Package"
     runs-on: ubuntu-latest
