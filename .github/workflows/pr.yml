@@ -29,7 +29,7 @@ jobs:
 
       - name: Run Prerequisites
         id: prerequisites
-        uses: ./.github/workflows/prerequisites
+        uses: IAG-Ent/.github/.github/actions/prerequisites@main
   lambda_tests_and_package:
     name: "Run Lambda Tests and Package"
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Lambda Tests and Package
-        uses: ./.github/workflows/lambda_tests_and_package
+        uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
         with:
           lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
           python_version_matrix: "${{ matrix.python-version  }}"
@@ -86,7 +86,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Terraform
-        uses: ./.github/workflows/terraform_run
+        uses: IAG-Ent/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'apply'
@@ -123,7 +123,7 @@ jobs:
           ref: main
 
       - name: Run Terraform
-        uses: ./.github/workflows/terraform_run
+        uses: IAG-Ent/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'apply'
