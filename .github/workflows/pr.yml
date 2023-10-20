@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Terraform
-        uses: ./.github/workflows/terraform_run
+        uses: IAG-Ent/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'plan'
