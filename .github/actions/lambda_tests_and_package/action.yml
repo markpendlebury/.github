@@ -89,7 +89,7 @@ runs:
       id: lambda_package
       shell: bash
       run: |
-        IFS=',' read -ra LAMBDA_MODULES <<< "${{ inputs.lambda_names  }}"
+        IFS=',' read -ra LAMBDA_MODULES <<< "${{ inputs.account_id  }}"
         for module_directory in "${LAMBDA_MODULES[@]}"; do
           module=${module_directory//_/-}
 
@@ -110,7 +110,7 @@ runs:
 
           zip -r ${zip_name} *
 
-          echo "Uploading zip to "ccoe-ecp-${{ inputs.lambda_names }}-eu-west-1-lambda-code"
+          echo "Uploading zip to "ccoe-ecp-${{ inputs.lambda_names }}-eu-west-1-lambda-code""
           aws s3api put-object --bucket "ccoe-ecp-${{ inputs.account_id }}-eu-west-1-lambda-code" --key $zip_name --body $zip_name
 
           popd
