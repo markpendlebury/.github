@@ -12,8 +12,8 @@ You should also have your environment configured and have `ACCOUNT_ID` and `AWS_
 
 - [Reusable Workflows](#reusable-workflows)
   - [Main Branch Workflow](#main-branch-workflow)
-  - [Plan Only Workflow](#workflow-2)
-  - [Pull Request Workflow](#workflow-2)
+  - [Plan Only Workflow](#plan-only-workflow)
+  - [Pull Request Workflow](#pr-workflow)
 - [Reusable Actions](#reusable-actions)
   - [Lambda Tests and Package](#action-1)
   - [Prerequisites](#action-2)

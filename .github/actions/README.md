@@ -1,24 +1,26 @@
-name: Main Branch Workflow
+# Reusable Actions
 
-on:
-  workflow_call:
-    inputs:
-      env_name:
-        required: true
-        type: string
+Create your own unique workflows with these re-usable actions.
 
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
-permissions:
-  id-token: write
-  contents: read
+## Table of Contents
 
+- [Reusable Actions](#reusable-actions)
+  - [Prerequisites](#action-1)
+  - [Lambda Tests and Package](#action-2)
+  - [Terraform run](#action-2)
+
+### Prerequisites
+
+**Description:** Set ecp_release_version and collects lambda changes. This will give you an output of lambdas_changed which will be a list of lambda naames where changes have been detected. Note your repo should follow a specific file structure for this to work. See example repo.
+
+**Usage:** To use this action:
+
+```yaml
 jobs:
   prerequisites:
     name: "Prerequisites"
     runs-on: ubuntu-latest
-    environment: ${{ inputs.env_name }}
+    environment: dev
     outputs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
     steps:
@@ -28,10 +30,20 @@ jobs:
       - name: Run Prerequisites
         id: prerequisites
         uses: IAG-Ent/.github/.github/actions/prerequisites@main
+```
+
+### Lambda Tests and Package
+
+**Description:** This action will Set up Python -> Install requirements.txt and/or test-requirements.txt -> Lint with Black -> Test with pytest -> Package Lambda Code - > Copy package to ccoe-ecp-${{ inputs.aws_account_id }}-eu-west-1-lambda-code
+
+**Usage:** To use this action:
+
+```yaml
+jobs:
   lambda_tests_and_package:
     name: "Run Lambda Tests and Package"
     runs-on: ubuntu-latest
-    environment: ${{ inputs.env_name }}
+    environment: dev
     needs: prerequisites
     strategy:
       matrix:
@@ -47,7 +59,16 @@ jobs:
           python_version_matrix: "${{ matrix.python-version  }}"
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           aws_account_id: ${{ vars.ACCOUNT_ID }}
-    
+```
+
+### Terraform Run 
+
+**Description:** This action will Configure AWS credentials -> setup-terraform -> Terraform Backend Config -> Terraform Init -> Terraform Validate -> Terraform Plan -> Terraform Apply
+
+**Usage:** To use this action:
+
+```yaml
+jobs:
   terraform_plan:
     name: "Terraform Plan dev-ecptest"
     runs-on: ubuntu-latest
@@ -69,25 +90,4 @@ jobs:
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: terraform
-  
-  terraform_apply:
-    name: "Terraform Apply dev-ecptest"
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
-    needs: 
-      - prerequisites
-      - terraform_plan
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run Terraform
-        uses: IAG-Ent/.github/.github/actions/terraform_run@main
-        with:
-          aws_role: ${{ vars.AWS_OIDC_ROLE }}
-          terraform_action: 'apply'
-          terraform_version: 1.5.6
-          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tf_working_dir: terraform
+```
