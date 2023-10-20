@@ -5,9 +5,9 @@ Create your own unique workflows with these re-usable actions.
 ## Table of Contents
 
 - [Reusable Actions](#reusable-actions)
-  - [Prerequisites](#action-1)
-  - [Lambda Tests and Package](#action-2)
-  - [Terraform run](#action-2)
+  - [Prerequisites](#prerequisites)
+  - [Lambda Tests and Package](#lambda-tests-and-package-2)
+  - [Terraform run](#terraform-run)
 
 ### Prerequisites
 
