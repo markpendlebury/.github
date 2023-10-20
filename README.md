@@ -14,10 +14,7 @@ You should also have your environment configured and have `ACCOUNT_ID` and `AWS_
   - [Main Branch Workflow](#main-branch-workflow)
   - [Plan Only Workflow](#plan-only-workflow)
   - [Pull Request Workflow](#pr-workflow)
-- [Reusable Actions](#https://github.com/IAG-Ent/.github/tree/main/.github/actions#reusable-actions)
-  - [Lambda Tests and Package](#https://github.com/IAG-Ent/.github/tree/main/.github/actions#prerequisites)
-  - [Prerequisites](#action-2)
-  - [Terraform Run](#action-2)
+- [Reusable Actions](https://github.com/IAG-Ent/.github/tree/main/.github/actions#reusable-actions)
 - [Usage](#usage)
 
 ### Main Branch Workflow
