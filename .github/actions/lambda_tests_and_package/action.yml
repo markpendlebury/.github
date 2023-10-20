@@ -1,4 +1,4 @@
-name: Lambda Tests
+name: Lambda Tests and Package
 description: Runs a Terraform Plan or Apply against an AWS account, assumes the correct role has been assumed above
 inputs:
   lambda_names:
@@ -11,7 +11,7 @@ inputs:
     description: 'Role to assume'
     required: true
   aws_account_id:
-    description: 'account_id'
+    description: 'AWS account id'
     required: true
 
 runs:
@@ -70,7 +70,6 @@ runs:
           if [[ -d 'tests' ]]; then
             source venv/bin/activate
             pip list
-            cd tests
             pwd
 
             pytest
