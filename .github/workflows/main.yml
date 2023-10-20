@@ -44,7 +44,7 @@ jobs:
           lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
           python_version_matrix: "${{ matrix.python-version  }}"
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
-          aws_account_id: "${{ vars.ACCOUNT_ID }}"
+          aws_account_id: ${{ vars.ACCOUNT_ID }}
     
   terraform_plan:
     name: "Terraform Plan dev-ecptest"
