@@ -4,8 +4,7 @@ Welcome to the repository containing a collection of reusable GitHub Workflows a
 
 ## Prerequisites
 
-Note that for the reusable workflows to be affective, your repository should follow a certain file structure. See example repo. 
-
+Note that for the reusable workflows to be affective, your repository should follow a certain file structure. [See example repo](https://github.com/IAG-Ent/iag-ecp-example-repo)
 You should also have your environment configured and have `ACCOUNT_ID` and `AWS_OIDC_ROLE` in variables. 
 
 ## Table of Contents
