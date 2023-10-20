@@ -110,10 +110,6 @@ runs:
 
           zip -r ${zip_name} *
 
-          echo "${{ inputs.aws_account_id  }}"
-          echo "${{ inputs.lambda_names  }}"
-          echo "${{ inputs.aws_role }}"
-          echo "${{ inputs.aws_role }}"
           echo "Uploading zip to ccoe-ecp-${{ inputs.aws_account_id }}-eu-west-1-lambda-code"
           aws s3api put-object --bucket ccoe-ecp-${{ inputs.aws_account_id }}-eu-west-1-lambda-code --key $zip_name --body $zip_name
 
