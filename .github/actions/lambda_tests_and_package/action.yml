@@ -5,13 +5,13 @@ inputs:
     description: 'List of Lambda names to test'
     required: true
   python_version_matrix:
-    description: 'Lst of pythin version'
+    description: 'Lst of python version'
     required: true
   aws_role:
     description: 'Role to assume'
     required: true
-  lambda_code_bucket:
-    description: 'Lambda code bucket name'
+  aws_account_id:
+    description: 'account_id'
     required: true
 
 runs:
@@ -24,7 +24,6 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ inputs.python_version_matrix }}
-
     - name: Install testing dependencies
       shell: bash
       run: |
@@ -111,8 +110,8 @@ runs:
 
           zip -r ${zip_name} *
 
-          echo "Uploading zip to ${{ inputs.lambda_code_bucket }}"
-          aws s3api put-object --bucket ${{ inputs.lambda_code_bucket }} --key $zip_name --body $zip_name
+          echo "Uploading zip to "ccoe-ecp-${{ inputs.account_id }}-eu-west-1-lambda-code""
+          aws s3api put-object --bucket "ccoe-ecp-${{ inputs.account_id }}-eu-west-1-lambda-code" --key $zip_name --body $zip_name
 
           popd
           popd
