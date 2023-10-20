@@ -109,9 +109,8 @@ runs:
           pushd ../../${module}-dist
 
           zip -r ${zip_name} *
-          
-          echo "Account id ${{ inputs.account_id }}""
-          echo "Uploading zip to "ccoe-ecp-${{ inputs.account_id }}-eu-west-1-lambda-code"
+
+          echo "Uploading zip to "ccoe-ecp-${{ inputs.lambda_names }}-eu-west-1-lambda-code"
           aws s3api put-object --bucket "ccoe-ecp-${{ inputs.account_id }}-eu-west-1-lambda-code" --key $zip_name --body $zip_name
 
           popd
