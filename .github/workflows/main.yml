@@ -6,6 +6,10 @@ on:
       env_name:
         required: true
         type: string
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   id-token: write
   contents: read
@@ -15,7 +19,6 @@ jobs:
     name: "Prerequisites"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
     outputs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
     steps:

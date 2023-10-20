@@ -9,7 +9,8 @@ on:
       protected_env_name:
         required: true
         type: string
-
+concurrency:
+  group: pr-workflow
 permissions:
   id-token: write
   contents: read
@@ -20,7 +21,6 @@ jobs:
     name: "Prerequisites"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
     outputs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
     steps:
@@ -34,7 +34,6 @@ jobs:
     name: "Run Lambda Tests and Package"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
     needs: prerequisites
     strategy:
       matrix:
