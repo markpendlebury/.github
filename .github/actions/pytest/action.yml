@@ -37,7 +37,7 @@ runs:
         # Lint with black
         black . --check
 
-        python3 -m venv venv
+        python -m venv venv
         source venv/bin/activate
 
         if [ -f "requirements.txt" ]; then
