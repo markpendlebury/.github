@@ -111,7 +111,6 @@ jobs:
       - name: Run Terraform
         uses: IAG-Ent/.github/.github/actions/pytest@main
         with:
-          aws_role: ${{ vars.AWS_OIDC_ROLE }}
           working_dir: integration_tests
 
   wait_revert_command:

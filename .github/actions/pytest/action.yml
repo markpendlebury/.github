@@ -1,9 +1,6 @@
 name: Pytest
 description: Runs a pytest in the given dir
 inputs:
-  aws_role:
-    description: 'AWS OIDC Role'
-    required: true
   working_dir:
     description: 'Directory where tests live'
     required: true
@@ -27,37 +24,37 @@ runs:
         python -m pip install --upgrade pip
         pip install black pytest
 
-    - name: Set up Python environments
-      shell: bash
-      working-directory: ${{ inputs.working_dir }}
-      run: |
-
-        pip install pytest black
-
-        # Lint with black
-        black . --check
+        pwd
 
         python -m venv venv
         source venv/bin/activate
 
-        if [ -f "requirements.txt" ]; then
+        if [[ -f requirements.txt ]]; then
           pip install -r requirements.txt
-        else
-          echo "No requirements.txt found in test dir, skipping."
         fi
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-region: eu-west-1
-        role-to-assume: ${{ inputs.aws_role }}
-        role-session-name: IntegrationTests
-    - name: Run Pytest
-      shell: bash
-      working-directory: ${{ inputs.integration_tests }}
-      run: |
-        source venv/bin/activate
+        if [[ -f test-requirements.txt ]]; then
+          pip install -r test-requirements.txt
+        fi
+        pip list
 
+        deactivate
+
+        popd
+    - name: Lint with Black
+      shell: bash
+      run: |
+        black . --check
+    - name: Test with pytest
+      shell: bash
+      run: |
+        pwd 
+
+        source venv/bin/activate
+        pip list
+        pwd
+        cd ${{ inputs.working_dir }}
         pytest .
 
         deactivate
+        popd
