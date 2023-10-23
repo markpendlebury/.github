@@ -1,11 +1,14 @@
-name: Lambda Tests and Package
+name: Pytest
 description: Runs a pytest in the given dir
 inputs:
-  INTG_TEST_DIR:
-    description: 'INTG_TEST_DIR'
+  aws_role:
+    description: 'AWS OIDC Role'
     required: true
-  AWS_OIDC_ROLE:
-    description: 'AWS_OIDC_ROLE'
+  working_dir:
+    description: 'Directory where tests live'
+    required: true
+  python_version_matrix:
+    description: 'Lst of python versions'
     required: true
 
 runs:
@@ -26,7 +29,7 @@ runs:
 
     - name: Set up Python environments
       shell: bash
-      working-directory: "${{inputs.INTG_TEST_DIR}}"
+      working-directory: "${{inputs.working_dir}}"
       run: |
 
         pip install pytest black
@@ -46,11 +49,11 @@ runs:
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-region: eu-west-1
-        role-to-assume: ${{ inputs.AWS_OIDC_ROLE }}
+        role-to-assume: ${{ inputs.aws_role }}
         role-session-name: IntegrationTests
     - name: Run Pytest
       shell: bash
-      working-directory: "${{inputs.INTG_TEST_DIR}}"
+      working-directory: "${{inputs.aws_role}}"
       run: |
         source ./venv/bin/activate
 
