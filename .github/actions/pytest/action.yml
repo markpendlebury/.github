@@ -39,8 +39,6 @@ runs:
         pip list
 
         deactivate
-
-        popd
     - name: Lint with Black
       shell: bash
       run: |
@@ -57,4 +55,3 @@ runs:
         pytest .
 
         deactivate
-        popd
