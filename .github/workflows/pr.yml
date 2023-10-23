@@ -51,7 +51,7 @@ jobs:
           aws_account_id: ${{ vars.ACCOUNT_ID }}
     
   terraform_plan:
-    name: "Terraform Plan dev-ecptest"
+    name: "Terraform Plan ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
@@ -73,7 +73,7 @@ jobs:
           tf_working_dir: terraform
   
   terraform_apply:
-    name: "Terraform Apply dev-ecptest"
+    name: "Terraform Apply ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
@@ -94,7 +94,7 @@ jobs:
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: terraform
   integration_tests:
-    name: "Terraform Apply dev-ecptest"
+    name: "Integraiton Tests ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
@@ -112,7 +112,7 @@ jobs:
         uses: IAG-Ent/.github/.github/actions/pytest@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
-          working_dir: 'integration_tests'
+          working_dir: integration_tests
 
   wait_revert_command:
     name: "Manual testing"
