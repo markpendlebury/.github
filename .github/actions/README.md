@@ -11,7 +11,7 @@ Create your own unique workflows with these re-usable actions.
 
 ### Prerequisites
 
-**Description:** Set ecp_release_version and collects lambda changes. This will give you an output of lambdas_changed which will be a list of lambda naames where changes have been detected. Note your repo should follow a specific file structure for this to work. See example repo.
+**Description:** Set ecp_release_version and collects lambda changes. This will give you an output of lambdas_changed which will be a list of lambda naames where changes have been detected. Note your repo should follow a specific file structure for this to work. [See example repo](https://github.com/IAG-Ent/iag-ecp-example-repo).
 
 **Usage:** To use this action:
 
@@ -30,6 +30,33 @@ jobs:
       - name: Run Prerequisites
         id: prerequisites
         uses: IAG-Ent/.github/.github/actions/prerequisites@main
+```
+
+### Pytest
+
+**Description:** This action will Set up Python -> Install requirements.txt -> Lint with Black -> Test with pytest -
+
+**Usage:** To use this action:
+
+```yaml
+jobs:
+  lambda_tests_and_package:
+    name: "Run Pytest"
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: prerequisites
+    strategy:
+      matrix:
+        python-version: [ "3.10" ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Pytest
+        uses: IAG-Ent/.github/.github/actions/pytest@main
+        with:
+          INTG_TEST_DIR: "./lambda_name/tests"
+          AWS_OIDC_ROLE: ${{ vars.AWS_OIDC_ROLE }}
 ```
 
 ### Lambda Tests and Package

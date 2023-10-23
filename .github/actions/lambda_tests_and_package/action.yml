@@ -2,10 +2,10 @@ name: Lambda Tests and Package
 description: Runs a Terraform Plan or Apply against an AWS account, assumes the correct role has been assumed above
 inputs:
   lambda_names:
-    description: 'List of Lambda names to test'
+    description: 'List of Lambda names to test. These should be lambda directories with tests folder in there. See example-repo'
     required: true
   python_version_matrix:
-    description: 'Lst of python version'
+    description: 'Lst of python versions'
     required: true
   aws_role:
     description: 'Role to assume'
