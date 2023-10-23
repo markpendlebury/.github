@@ -48,7 +48,7 @@ jobs:
           aws_account_id: "${{ vars.ACCOUNT_ID }}"
     
   terraform_plan:
-    name: "Terraform Plan dev-ecptest"
+    name: "Terraform Plan ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
@@ -59,7 +59,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run Terraform
+      - name: Run Terraform Plan
         uses: IAG-Ent/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}

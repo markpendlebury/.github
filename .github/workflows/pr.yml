@@ -112,6 +112,7 @@ jobs:
         uses: IAG-Ent/.github/.github/actions/pytest@main
         with:
           working_dir: integration_tests
+          python_version_matrix: "${{ matrix.python-version  }}"
 
   wait_revert_command:
     name: "Manual testing"

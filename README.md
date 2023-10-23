@@ -15,7 +15,6 @@ You should also have your environment configured and have `ACCOUNT_ID` and `AWS_
   - [Plan Only Workflow](#plan-only-workflow)
   - [Pull Request Workflow](#pr-workflow)
 - [Reusable Actions](https://github.com/IAG-Ent/.github/tree/main/.github/actions#reusable-actions)
-- [Usage](#usage)
 
 ### Main Branch Workflow
 
@@ -68,7 +67,7 @@ jobs:
 
 ### PR Workflow
 
-**Description:**  Prerequisites -> Pytest -> Lambda Package -> Terraform Plan -> Terraform Apply -> Wait for Manual Testing -> Apply from main branch
+**Description:**  Prerequisites -> Pytest -> Lambda Package -> Terraform Plan -> Terraform Apply -> Integration Tests -> Wait for Manual Testing -> Apply from main branch
 
 **Usage:** To use this workflow create a main.yml in your own .github folder and add the following yaml file. For this workflow to be effective you will need to set up a protected environment and protection rules
 

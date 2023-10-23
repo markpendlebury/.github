@@ -55,8 +55,8 @@ jobs:
       - name: Run Pytest
         uses: IAG-Ent/.github/.github/actions/pytest@main
         with:
-          INTG_TEST_DIR: "./lambda_name/tests"
-          AWS_OIDC_ROLE: ${{ vars.AWS_OIDC_ROLE }}
+          working_dir: integration_tests
+          python_version_matrix: "${{ matrix.python-version  }}"
 ```
 
 ### Lambda Tests and Package
