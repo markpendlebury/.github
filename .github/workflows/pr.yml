@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.protected_env_name }}
     needs:
-      - terraform_apply
+      - integration_tests
     steps:
       - name: Revert Dev Approved
         run: |
