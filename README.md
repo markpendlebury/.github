@@ -38,6 +38,7 @@ jobs:
     uses: IAG-Ent/.github/.github/workflows/main.yml@main
     with:
       env_name: dev
+      tf_working_dir: terraform
 ```
 
 ### Plan Only Workflow
@@ -63,6 +64,7 @@ jobs:
     uses: IAG-Ent/.github/.github/workflows/plan.yml@main
     with:
       env_name: dev
+      tf_working_dir: terraform
 ```
 
 ### PR Workflow
@@ -90,4 +92,5 @@ jobs:
     with:
       env_name: dev
       protected_env_name: dev-protected
+      tf_working_dir: terraform
 ```
