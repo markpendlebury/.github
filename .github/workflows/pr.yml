@@ -9,7 +9,7 @@ on:
       protected_env_name:
         required: true
         type: string
-      terraform_working_dir:
+      tf_working_dir:
         required: true
         type: string
 concurrency:
@@ -73,7 +73,7 @@ jobs:
           terraform_version: 1.5.6
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tf_working_dir: ${{ inputs.terraform_working_dir }}
+          tf_working_dir: ${{ inputs.tf_working_dir }}
   
   terraform_apply:
     name: "Terraform Apply ${{ inputs.env_name }}"
@@ -95,7 +95,7 @@ jobs:
           terraform_version: 1.5.6
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tf_working_dir: ${{ inputs.terraform_working_dir }}
+          tf_working_dir: ${{ inputs.tf_working_dir }}
   integration_tests:
     name: "Integraiton Tests ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
@@ -152,4 +152,4 @@ jobs:
           terraform_version: 1.5.6
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tf_working_dir: ${{ inputs.terraform_working_dir }}
+          tf_working_dir: ${{ inputs.tf_working_dir }}
