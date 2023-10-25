@@ -4,6 +4,9 @@ inputs:
   aws_role:
     description: 'AWS Role to assume to perform Terraform plan'
     required: true
+  aws_region:
+    description: 'AWS Region to perform Terraform plan'
+    required: true
   terraform_action:
     description: 'Terraform action to perform, options are "plan" and "apply"'
     default: 'plan'
@@ -33,7 +36,7 @@ runs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-region: eu-west-1
+        aws-region: ${{ inputs.aws_region }}
         role-to-assume: ${{ inputs.aws_role }}
         role-session-name: TerraformApplyJob
 

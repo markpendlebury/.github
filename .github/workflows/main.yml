@@ -6,9 +6,13 @@ on:
       env_name:
         required: true
         type: string
+      aws_region:
+        required: true
+        type: string
       tf_working_dir:
         required: false
         type: string
+        
 
 concurrency:
   group: ${{ github.ref }}
@@ -67,6 +71,7 @@ jobs:
         uses: IAG-Ent/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          aws_region: ${{ inputs.aws_region }}
           terraform_action: 'plan'
           terraform_version: 1.5.6
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
@@ -89,6 +94,7 @@ jobs:
         uses: IAG-Ent/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          aws_region: ${{ inputs.aws_region }}
           terraform_action: 'apply'
           terraform_version: 1.5.6
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
