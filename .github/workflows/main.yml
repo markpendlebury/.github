@@ -14,9 +14,9 @@ on:
         type: string
         
 
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: false
+# concurrency:
+#   group: ${{ github.ref }}
+#   cancel-in-progress: false
 permissions:
   id-token: write
   contents: read
