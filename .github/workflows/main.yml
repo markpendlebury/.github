@@ -13,10 +13,6 @@ on:
         required: false
         type: string
         
-
-# concurrency:
-#   group: ${{ github.ref }}
-#   cancel-in-progress: false
 permissions:
   id-token: write
   contents: read
@@ -28,6 +24,7 @@ jobs:
     environment: ${{ inputs.env_name }}
     outputs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
+      ecp_release_version: ${{ steps.prerequisites.outputs.ecp_release_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -60,6 +57,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
     needs: 
       - prerequisites
       - lambda_tests_and_package
@@ -83,6 +83,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
     needs: 
       - prerequisites
       - terraform_plan

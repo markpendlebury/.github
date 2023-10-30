@@ -26,6 +26,7 @@ jobs:
     environment: ${{ inputs.env_name }}
     outputs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
+      ecp_release_version: ${{ steps.prerequisites.outputs.ecp_release_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -74,6 +75,7 @@ jobs:
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
+          aws_region: ${{ inputs.aws_region }}
   
   terraform_apply:
     name: "Terraform Apply ${{ inputs.env_name }}"
@@ -96,11 +98,15 @@ jobs:
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
+          aws_region: ${{ inputs.aws_region }}
   integration_tests:
     name: "Integraiton Tests ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
     needs: 
       - prerequisites
       - terraform_apply
@@ -134,6 +140,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
     if: ${{ always() }}
     needs: 
       - prerequisites
@@ -153,3 +162,4 @@ jobs:
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
+          aws_region: ${{ inputs.aws_region }}
