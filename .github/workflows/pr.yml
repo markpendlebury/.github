@@ -67,6 +67,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
     needs: 
       - prerequisites
       - lambda_tests_and_package
@@ -90,6 +93,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
     needs: 
       - prerequisites
       - terraform_plan
