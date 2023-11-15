@@ -9,6 +9,9 @@ on:
       protected_env_name:
         required: true
         type: string
+      aws_region:
+        required: true
+        type: string
       tf_working_dir:
         required: true
         type: string
