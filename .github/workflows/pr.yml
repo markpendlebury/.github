@@ -12,6 +12,10 @@ on:
       tf_working_dir:
         required: true
         type: string
+      tf_version:
+        required: false
+        default: 1.5.6
+        type: string
 concurrency:
   group: pr-workflow
 permissions:
@@ -47,6 +51,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Lambda Tests and Package
+        if: inputs.run_lambda_steps == true
         uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
         with:
           lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
@@ -71,7 +76,7 @@ jobs:
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'plan'
-          terraform_version: 1.5.6
+          terraform_version: ${{ inputs.tf_version }}
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
@@ -94,7 +99,7 @@ jobs:
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'apply'
-          terraform_version: 1.5.6
+          terraform_version: ${{ inputs.tf_version }}
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
@@ -135,6 +140,31 @@ jobs:
         run: |
           echo "Manual testing completed. Proceed to revert changes in Dev environment"
 
+  lambda_tests_and_package_main:
+    name: "Run Lambda Tests and Package from origin/main"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    needs:
+      - prerequisites
+      - wait_revert_command
+    strategy:
+      matrix:
+        python-version: [ "3.10" ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Run Lambda Tests and Package
+        if: inputs.run_lambda_steps == true
+        uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
+        with:
+          lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
+          python_version_matrix: "${{ matrix.python-version  }}"
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          aws_account_id: ${{ vars.ACCOUNT_ID }}
+
   terraform_apply_main:
     name: "Terraform Apply from origin/main"
     runs-on: ubuntu-latest
@@ -147,6 +177,7 @@ jobs:
     needs: 
       - prerequisites
       - wait_revert_command
+      - lambda_tests_and_package_main
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -158,7 +189,7 @@ jobs:
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'apply'
-          terraform_version: 1.5.6
+          terraform_version: ${{ inputs.tf_version }}
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
