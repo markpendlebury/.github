@@ -103,7 +103,7 @@ runs:
             pip install --platform manylinux2010_x86_64 --implementation cp --only-binary=:all: --upgrade --target ../../${module}-dist cryptography
           fi
 
-          cp -r . ../../${module}-dist
+          rsync -ax --exclude venv --exclude tests . ../../${module}-dist
 
           pushd ../../${module}-dist
 
