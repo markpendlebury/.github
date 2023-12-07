@@ -126,23 +126,3 @@ jobs:
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
-  send_email_notification:
-    name: "Send email on success of the pipeline"
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.env_name }}
-    needs: terraform_apply
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Send Email Notification
-        if: inputs.send_email_notification == true
-        uses: IAG-Ent/.github/.github/actions/send_email_notification@main
-        with:
-          email: "${{ inputs.email  }}"
-          subject: "${{ inputs.subject  }}"
-          message: ${{ inputs.message  }}
-          env_name: ${{ inputs.env_name }}
-          branch_trigger: ${{ inputs.env_name }}
-          aws_role: ${{ vars.AWS_OIDC_ROLE }}
-          aws_region: ${{ inputs.aws_region }}
