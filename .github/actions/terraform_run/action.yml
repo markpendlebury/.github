@@ -29,6 +29,9 @@ outputs:
   terraform_plan_exitcode:
     description: "Whether changes are needed to the plan"
     value: ${{ steps.plan.outputs.exitcode }}
+  terraform_apply_output:
+    description: "Everything output by Terraform apply"
+    value: ${{ steps.output.outputs.tf_output_json }}
 
 runs:
   using: "composite"
