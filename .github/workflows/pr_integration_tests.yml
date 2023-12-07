@@ -157,7 +157,7 @@ jobs:
       - terraform_apply_integration_tests_infra
     runs-on: ubuntu-latest
     strategy:
-      matrix: { dir: [  ${{inputs.integration_tests_dir}} ] }
+      matrix: { dir: [ '${{ inputs.env_name }}' ] }
     environment: ${{ inputs.env_name }}
     env:
       PYTHON_VERSION: "3.10"
