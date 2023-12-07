@@ -84,3 +84,12 @@ runs:
       shell: bash
       if: ${{ inputs.terraform_action == 'apply' }}
       run: terraform apply -input=false -auto-approve
+  
+    - name: "Terraform Output"
+      id: output
+      working-directory: ${{ inputs.tf_working_dir }}
+      shell: bash
+      if: ${{ inputs.terraform_action == 'apply' }}
+      run: |
+        # `terraform-bin` because: https://stackoverflow.com/questions/69925970/how-to-save-terraform-output-variable-into-a-github-action-s-environment-variabl
+        echo "tf_output_json=$(terraform-bin output -json -no-color | jq -c)" >> $GITHUB_OUTPUT
