@@ -1,0 +1,279 @@
+name: PR Workflow
+
+on:
+  workflow_call:
+    inputs:
+      env_name:
+        required: true
+        type: string
+      protected_env_name:
+        required: true
+        type: string
+      aws_region:
+        required: true
+        type: string
+      tf_working_dir:
+        required: true
+        type: string
+      tf_version:
+        required: false
+        default: 1.5.6
+        type: string
+      run_lambda_steps:
+        required: false
+        default: true
+        type: boolean
+      test_tf_working_dir:
+        required: true
+        type: string
+      integration_tests_dir:
+        required: true
+        type: string
+concurrency:
+  group: pr-workflow
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  prerequisites:
+    name: "Prerequisites"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    outputs:
+      lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
+      ecp_release_version: ${{ steps.prerequisites.outputs.ecp_release_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Prerequisites
+        id: prerequisites
+        uses: IAG-Ent/.github/.github/actions/prerequisites@main
+  lambda_tests_and_package:
+    name: "Run Lambda Tests and Package"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    needs: prerequisites
+    strategy:
+      matrix:
+        python-version: [ "3.10" ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Lambda Tests and Package
+        if: inputs.run_lambda_steps == true
+        uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
+        with:
+          lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
+          python_version_matrix: "${{ matrix.python-version  }}"
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          aws_account_id: ${{ vars.ACCOUNT_ID }}
+    
+  terraform_plan:
+    name: "Terraform Plan ${{ inputs.env_name }}"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
+    needs: 
+      - prerequisites
+      - lambda_tests_and_package
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Terraform
+        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        with:
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          terraform_action: 'plan'
+          terraform_version: ${{ inputs.tf_version }}
+          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tf_working_dir: ${{ inputs.tf_working_dir }}
+          aws_region: ${{ inputs.aws_region }}
+  
+  terraform_apply:
+    name: "Terraform Apply ${{ inputs.env_name }}"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
+    needs: 
+      - prerequisites
+      - terraform_plan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Terraform
+        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        with:
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          terraform_action: 'apply'
+          terraform_version: ${{ inputs.tf_version }}
+          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tf_working_dir: ${{ inputs.tf_working_dir }}
+          aws_region: ${{ inputs.aws_region }}
+  
+  terraform_apply_integration_tests_infra:
+    name: "Terraform apply integration test infra"
+    needs:
+      - terraform_apply
+    concurrency: Dev
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    outputs:
+      terraform_apply_output: ${{ steps.tf_apply.outputs.terraform_apply_output }}
+    env:
+      PYTHON_VERSION: "3.10"
+      INTG_TEST_INFRASTRUCTURE_DIR:  ${{ inputs.test_tf_working_dir }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Terraform Apply Test Infrastructure
+        id: tf_apply
+        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        with:
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          aws_region: eu-west-1
+          terraform_action: 'apply'
+          terraform_version: 1.6.1
+          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tf_working_dir: ${{env.INTG_TEST_INFRASTRUCTURE_DIR}}
+  integration_tests:
+    name: "Integration Tests"
+    needs:
+      - terraform_apply_integration_tests_infra
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: { dir: [  ${{inputs.integration_tests_dir}} ] }
+    environment: ${{ inputs.env_name }}
+    env:
+      PYTHON_VERSION: "3.10"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+          role-session-name: IntegrationTests
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install testing dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black pytest
+
+      - name: Set up Python environments
+        working-directory: ${{ matrix.dir }}
+        run: |
+
+          pip install pytest black
+          black . --check
+          python3 -m venv venv
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            echo "No requirements.txt found in dir, skipping."
+          fi
+
+      - name: Analyse TF Output
+        id: tf_output
+        run: |
+          TEST_OUTPUT=$(echo '${{ needs.terraform_apply_integration_tests_infra.outputs.terraform_apply_output }}' | jq -r '.test_output.value')
+          echo "TEST_OUTPUT=${TEST_OUTPUT}" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
+
+      - name: Run Pytest
+        working-directory: ${{ matrix.dir }}
+        env:
+          TEST_OUTPUT: ${{ steps.tf_output.outputs.test_output }}
+        run: |
+          source ./venv/bin/activate
+          pytest .
+          deactivate
+
+  wait_revert_command:
+    name: "Manual testing"
+    timeout-minutes: 180 #3 hours
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.protected_env_name }}
+    needs:
+      - integration_tests
+    steps:
+      - name: Revert Dev Approved
+        run: |
+          echo "Manual testing completed. Proceed to revert changes in Dev environment"
+
+  lambda_tests_and_package_main:
+    name: "Run Lambda Tests and Package from origin/main"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    needs:
+      - prerequisites
+      - wait_revert_command
+    strategy:
+      matrix:
+        python-version: [ "3.10" ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Run Lambda Tests and Package
+        if: inputs.run_lambda_steps == true
+        uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
+        with:
+          lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
+          python_version_matrix: "${{ matrix.python-version  }}"
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          aws_account_id: ${{ vars.ACCOUNT_ID }}
+
+  terraform_apply_main:
+    name: "Terraform Apply from origin/main"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    concurrency: ${{ inputs.env_name }}
+    env:
+      TF_VAR_org_environment: ${{ inputs.env_name }}
+      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
+    if: ${{ always() }}
+    needs: 
+      - prerequisites
+      - wait_revert_command
+      - lambda_tests_and_package_main
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Run Terraform
+        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        with:
+          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          terraform_action: 'apply'
+          terraform_version: ${{ inputs.tf_version }}
+          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tf_working_dir: ${{ inputs.tf_working_dir }}
+          aws_region: ${{ inputs.aws_region }}
