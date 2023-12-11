@@ -144,12 +144,12 @@ jobs:
         id: tf_apply
         uses: IAG-Ent/.github/.github/actions/terraform_run@main
         with:
-          aws_role: ${{ vars.AWS_OIDC_ROLE }}
+          aws_role: ${{ vars.TEST_AWS_OIDC_ROLE }}
           aws_region: eu-west-1
           terraform_action: 'apply'
           terraform_version: 1.6.1
-          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_bucket: ccoe-ecp-${{ vars.TEST_ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_dynamodb_table: ccoe-ecp-${{ vars.TEST_ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{env.INTG_TEST_INFRASTRUCTURE_DIR}}
   integration_tests:
     name: "Integration Tests"
