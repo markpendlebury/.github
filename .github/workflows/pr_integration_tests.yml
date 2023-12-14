@@ -206,6 +206,15 @@ jobs:
 
             network_a_ldn_ip=$(echo '${{ needs.terraform_apply_integration_tests_infra.outputs.terraform_apply_output }}' | jq -r '.network_a_ldn_ip.value')
             echo "network_a_ldn_ip=${network_a_ldn_ip}" >> $GITHUB_OUTPUT
+
+            network_a_ec2_instance_id=$(echo '${{ needs.terraform_apply_integration_tests_infra.outputs.terraform_apply_output }}' | jq -r '.network_a_ec2_instance_id.value')
+            echo "network_a_ec2_instance_id=${network_a_ec2_instance_id}" >> $GITHUB_OUTPUT
+
+            network_b_ec2_instance_id=$(echo '${{ needs.terraform_apply_integration_tests_infra.outputs.terraform_apply_output }}' | jq -r '.network_b_ec2_instance_id.value')
+            echo "network_b_ec2_instance_id=${network_b_ec2_instance_id}" >> $GITHUB_OUTPUT
+
+            network_a_ldn_instance_id=$(echo '${{ needs.terraform_apply_integration_tests_infra.outputs.terraform_apply_output }}' | jq -r '.network_a_ldn_instance_id.value')
+            echo "network_a_ldn_instance_id=${network_a_ldn_instance_id}" >> $GITHUB_OUTPUT
             echo $GITHUB_OUTPUT
 
       - name: Run Pytest
@@ -214,6 +223,9 @@ jobs:
           network_a_ec2_ip: ${{ steps.tf_output.outputs.network_a_ec2_ip }}
           network_b_ec2_ip: ${{ steps.tf_output.outputs.network_b_ec2_ip }}
           network_a_ldn_ip: ${{ steps.tf_output.outputs.network_a_ldn_ip }}
+          network_a_ec2_instance_id: ${{ steps.tf_output.outputs.network_a_ec2_instance_id }}
+          network_b_ec2_instance_id: ${{ steps.tf_output.outputs.network_b_ec2_instance_id }}
+          network_a_ldn_instance_id: ${{ steps.tf_output.outputs.network_a_ldn_instance_id }}
         run: |
           source ./venv/bin/activate
           pytest .
