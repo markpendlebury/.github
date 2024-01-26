@@ -25,7 +25,7 @@ jobs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Prerequisites
         id: prerequisites
@@ -50,7 +50,7 @@ jobs:
         python-version: [ "3.10" ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Pytest
         uses: IAG-Ent/.github/.github/actions/pytest@main
@@ -77,7 +77,7 @@ jobs:
         python-version: [ "3.10" ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Lambda Tests and Package
         uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
@@ -106,7 +106,7 @@ jobs:
       - lambda_tests_and_package
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Terraform
         uses: IAG-Ent/.github/.github/actions/terraform_run@main
