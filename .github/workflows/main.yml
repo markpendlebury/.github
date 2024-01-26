@@ -86,6 +86,8 @@ jobs:
     needs:
       - prerequisites
       - lambda_tests_and_package
+    outputs:
+      terraform_plan_exitcode: ${{ steps.terraform_plan.outputs.terraform_plan_exitcode }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -109,6 +111,7 @@ jobs:
     env:
       TF_VAR_org_environment: ${{ inputs.env_name }}
       TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
+    if: needs.terraform_plan.outputs.terraform_plan_exitcode != 0
     needs:
       - prerequisites
       - terraform_plan
