@@ -37,7 +37,7 @@ jobs:
       ecp_release_version: ${{ steps.prerequisites.outputs.ecp_release_version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Prerequisites
         id: prerequisites
@@ -52,7 +52,7 @@ jobs:
         python-version: [ "3.10" ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Lambda Tests and Package
         if: inputs.run_lambda_steps == true
@@ -76,7 +76,7 @@ jobs:
       - lambda_tests_and_package
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Terraform Plan
         uses: IAG-Ent/.github/.github/actions/terraform_run@main
