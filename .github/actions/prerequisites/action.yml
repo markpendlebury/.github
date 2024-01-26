@@ -28,7 +28,7 @@ runs:
         normalized_git_branch=$(echo ${{ github.ref_name }} | tr / -)
         echo "normalized_git_branch=${normalized_git_branch}" >> "$GITHUB_OUTPUT"
         echo "Normalized Git Branch: ${normalized_git_branch}"
-    - uses: dorny/paths-filter@v2
+    - uses: dorny/paths-filter@v3
       id: changes
       with:
         list-files: 'escape'
