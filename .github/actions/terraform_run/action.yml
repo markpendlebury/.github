@@ -44,7 +44,7 @@ runs:
         role-session-name: TerraformApplyJob
 
     - name: "setup-terraform"
-      uses: hashicorp/setup-terraform@v3
+      uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: ${{ inputs.terraform_version }}
 
