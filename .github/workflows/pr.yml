@@ -25,6 +25,7 @@ on:
         type: boolean
 concurrency:
   group: pr-workflow
+  cancel-in-progress: false
 permissions:
   id-token: write
   contents: read
@@ -70,7 +71,9 @@ jobs:
     name: "Terraform Plan ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
+    concurrency:
+      group: ${{ inputs.env_name }}
+      cancel-in-progress: false
     env:
       TF_VAR_org_environment: ${{ inputs.env_name }}
       TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
@@ -96,7 +99,9 @@ jobs:
     name: "Terraform Apply ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
+    concurrency:
+      group: ${{ inputs.env_name }}
+      cancel-in-progress: false
     env:
       TF_VAR_org_environment: ${{ inputs.env_name }}
       TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
@@ -121,7 +126,9 @@ jobs:
     name: "Integraiton Tests ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
+    concurrency:
+      group: ${{ inputs.env_name }}
+      cancel-in-progress: false
     env:
       TF_VAR_org_environment: ${{ inputs.env_name }}
       TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
@@ -156,7 +163,9 @@ jobs:
   lambda_tests_and_package_main:
     name: "Run Lambda Tests and Package from origin/main"
     runs-on: ubuntu-latest
-    environment: ${{ inputs.env_name }}
+    concurrency:
+      group: ${{ inputs.env_name }}
+      cancel-in-progress: false
     needs:
       - prerequisites
       - wait_revert_command
@@ -182,7 +191,9 @@ jobs:
     name: "Terraform Apply from origin/main"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
+    concurrency:
+      group: ${{ inputs.env_name }}
+      cancel-in-progress: false
     env:
       TF_VAR_org_environment: ${{ inputs.env_name }}
       TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}

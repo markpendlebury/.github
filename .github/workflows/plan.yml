@@ -22,7 +22,7 @@ on:
         type: string
 concurrency:
   group: ${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 permissions:
   id-token: write
   contents: read
@@ -67,7 +67,9 @@ jobs:
     name: "Terraform Plan ${{ inputs.env_name }}"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
-    concurrency: ${{ inputs.env_name }}
+    concurrency:
+      group: ${{ inputs.env_name }}
+      cancel-in-progress: false
     env:
       TF_VAR_org_environment: ${{ inputs.env_name }}
       TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
