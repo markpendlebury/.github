@@ -20,9 +20,7 @@ on:
         required: false
         default: 1.5.6
         type: string
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: false
+
 permissions:
   id-token: write
   contents: read

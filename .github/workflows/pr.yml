@@ -23,9 +23,7 @@ on:
         required: false
         default: true
         type: boolean
-concurrency:
-  group: pr-workflow
-  cancel-in-progress: false
+
 permissions:
   id-token: write
   contents: read
