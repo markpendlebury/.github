@@ -32,7 +32,6 @@ jobs:
     environment: ${{ inputs.env_name }}
     outputs:
       lambdas_changed: ${{ steps.prerequisites.outputs.lambdas_changed }}
-      ecp_release_version: ${{ steps.prerequisites.outputs.ecp_release_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,7 +69,6 @@ jobs:
       cancel-in-progress: false
     env:
       TF_VAR_org_environment: ${{ inputs.env_name }}
-      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
     needs: 
       - prerequisites
       - lambda_tests_and_package
@@ -85,5 +83,5 @@ jobs:
           aws_region: ${{ inputs.aws_region }}
           terraform_action: 'plan'
           terraform_version: ${{ inputs.tf_version }}
-          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_bucket: ${{ vars.BUCKET_NAME }}
           tf_working_dir: ${{ inputs.tf_working_dir }}

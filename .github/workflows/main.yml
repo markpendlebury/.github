@@ -109,7 +109,6 @@ jobs:
       cancel-in-progress: false
     env:
       TF_VAR_org_environment: ${{ inputs.env_name }}
-      TF_VAR_ecp_release_version: ${{ needs.prerequisites.outputs.ecp_release_version }}
     needs:
       - prerequisites
       - terraform_plan
@@ -124,5 +123,5 @@ jobs:
           aws_region: ${{ inputs.aws_region }}
           terraform_action: 'apply'
           terraform_version: ${{ inputs.tf_version }}
-          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_bucket: ${{ vars.BUCKET_NAME }}
           tf_working_dir: ${{ inputs.tf_working_dir }}

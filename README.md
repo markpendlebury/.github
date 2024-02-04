@@ -4,17 +4,18 @@ Welcome to the repository containing a collection of reusable GitHub Workflows a
 
 ## Prerequisites
 
-Note that for the reusable workflows to be affective, your repository should follow a certain file structure. [See example repo](https://github.com/IAG-Ent/iag-ecp-example-repo).
+Note that for the reusable workflows to be affective, your repository should follow a certain file structure.
 
 You should also have your environment configured and have `ACCOUNT_ID` and `AWS_OIDC_ROLE` in variables. 
 
 ## Table of Contents
 
-- [Reusable Workflows](#reusable-workflows)
-  - [Main Branch Workflow](#main-branch-workflow)
-  - [Plan Only Workflow](#plan-only-workflow)
-  - [Pull Request Workflow](#pr-workflow)
-- [Reusable Actions](https://github.com/markpendlebury/.github/tree/main/.github/actions#reusable-actions)
+- [Reusable Workflows and Actions Repository](#reusable-workflows-and-actions-repository)
+  - [Prerequisites](#prerequisites)
+  - [Table of Contents](#table-of-contents)
+    - [Main Branch Workflow](#main-branch-workflow)
+    - [Plan Only Workflow](#plan-only-workflow)
+    - [PR Workflow](#pr-workflow)
 
 ### Main Branch Workflow
 
@@ -60,7 +61,7 @@ permissions:
   contents: read
 
 jobs:
-  dev-ecptest:
+  dev:
     uses: markpendlebury/.github/.github/workflows/plan.yml@main
     with:
       env_name: dev
@@ -87,7 +88,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  dev-ecptest:
+  dev:
     uses: markpendlebury/.github/.github/workflows/pr.yml@main
     with:
       env_name: dev

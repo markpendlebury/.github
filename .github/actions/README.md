@@ -13,7 +13,7 @@ Create your own unique workflows with these re-usable actions.
 
 ### Prerequisites
 
-**Description:** Set ecp_release_version and collects lambda changes. This will give you an output of lambdas_changed which will be a list of lambda naames where changes have been detected. Note your repo should follow a specific file structure for this to work. [See example repo](https://github.com/IAG-Ent/iag-ecp-example-repo).
+**Description:**  This will give you an output of lambdas_changed which will be a list of lambda naames where changes have been detected. Note your repo should follow a specific file structure for this to work. 
 
 **Usage:** To use this action:
 
@@ -63,7 +63,7 @@ jobs:
 
 ### Lambda Tests and Package
 
-**Description:** This action will Set up Python -> Install requirements.txt and/or test-requirements.txt -> Lint with Black -> Test with pytest -> Package Lambda Code - > Copy package to ccoe-ecp-${{ inputs.aws_account_id }}-eu-west-1-lambda-code
+**Description:** This action will Set up Python -> Install requirements.txt and/or test-requirements.txt -> Lint with Black -> Test with pytest -> Package Lambda Code - > Copy package to ${{ inputs.LAMBDA_BUCKET }}
 
 **Usage:** To use this action:
 
@@ -99,7 +99,7 @@ jobs:
 ```yaml
 jobs:
   terraform_plan:
-    name: "Terraform Plan dev-ecptest"
+    name: "Terraform Plan dev"
     runs-on: ubuntu-latest
     environment: ${{ inputs.env_name }}
     concurrency: ${{ inputs.env_name }}
@@ -116,6 +116,6 @@ jobs:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'plan'
           terraform_version: 1.5.6
-          tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
+          tfstate_bucket: ${{ vars.BUCKET_NAME }}
           tf_working_dir: terraform
 ```
