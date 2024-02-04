@@ -2,9 +2,6 @@ name: Prerequisites
 description: prerequisites
 
 outputs:
-  ecp_release_version:
-    description: ""
-    value: ${{ steps.prerequisite_variables.outputs.ecp_release_version }}
   normalized_git_branch:
     description: ""
     value: ${{ steps.prerequisite_variables.outputs.normalized_git_branch  }}
@@ -21,17 +18,14 @@ runs:
     - name: Set variable
       id: prerequisite_variables
       shell: bash
-      run: |          
-        ecp_release_version=$(jq -r .ecp_release_version ./metadata.json)
-        echo "ecp_release_version=${ecp_release_version}" >> "$GITHUB_OUTPUT"
-        echo "ECP Release Version: ${ecp_release_version}"
+      run: |
         normalized_git_branch=$(echo ${{ github.ref_name }} | tr / -)
         echo "normalized_git_branch=${normalized_git_branch}" >> "$GITHUB_OUTPUT"
         echo "Normalized Git Branch: ${normalized_git_branch}"
     - uses: dorny/paths-filter@v3
       id: changes
       with:
-        list-files: 'escape'
+        list-files: "escape"
         filters: |
           lambda_changes:
             - 'src/**'
@@ -41,7 +35,7 @@ runs:
       run: |
         echo "There has been ${{ steps.changes.outputs.lambda_changes_count }} changes to lambdas detected"
         echo "${{ steps.changes.outputs.lambda_changes_files }}"
-        
+
         lambdas_changed=()
         for file_changed in $(echo "${{ steps.changes.outputs.lambda_changes_files }}" ); do
           echo $file_changed

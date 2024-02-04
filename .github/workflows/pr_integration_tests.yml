@@ -49,7 +49,7 @@ jobs:
 
       - name: Run Prerequisites
         id: prerequisites
-        uses: IAG-Ent/.github/.github/actions/prerequisites@main
+        uses: markpendlebury/.github/.github/actions/prerequisites@main
   lambda_tests_and_package:
     name: "Run Lambda Tests and Package"
     runs-on: ubuntu-latest
@@ -64,7 +64,7 @@ jobs:
 
       - name: Run Lambda Tests and Package
         if: inputs.run_lambda_steps == true
-        uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
+        uses: markpendlebury/.github/.github/actions/lambda_tests_and_package@main
         with:
           lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
           python_version_matrix: "${{ matrix.python-version  }}"
@@ -89,13 +89,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Terraform
-        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        uses: markpendlebury/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'plan'
           terraform_version: ${{ inputs.tf_version }}
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
           aws_region: ${{ inputs.aws_region }}
   
@@ -117,13 +116,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Terraform
-        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        uses: markpendlebury/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'apply'
           terraform_version: ${{ inputs.tf_version }}
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
           aws_region: ${{ inputs.aws_region }}
   
@@ -147,14 +145,13 @@ jobs:
 
       - name: Terraform Apply Test Infrastructure
         id: tf_apply
-        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        uses: markpendlebury/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.TEST_AWS_OIDC_ROLE }}
           aws_region: eu-west-1
           terraform_action: 'apply'
           terraform_version: 1.6.1
           tfstate_bucket: ccoe-ecp-${{ vars.TEST_ACCOUNT_ID }}-eu-west-1-tfstate
-          tfstate_dynamodb_table: ccoe-ecp-${{ vars.TEST_ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{env.INTG_TEST_INFRASTRUCTURE_DIR}}
   integration_tests:
     name: "Integration Tests"
@@ -266,7 +263,7 @@ jobs:
 
       - name: Run Lambda Tests and Package
         if: inputs.run_lambda_steps == true
-        uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
+        uses: markpendlebury/.github/.github/actions/lambda_tests_and_package@main
         with:
           lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
           python_version_matrix: "${{ matrix.python-version  }}"
@@ -295,12 +292,11 @@ jobs:
           ref: main
 
       - name: Run Terraform
-        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        uses: markpendlebury/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'apply'
           terraform_version: ${{ inputs.tf_version }}
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: ${{ inputs.tf_working_dir }}
           aws_region: ${{ inputs.aws_region }}

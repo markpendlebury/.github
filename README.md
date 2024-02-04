@@ -14,7 +14,7 @@ You should also have your environment configured and have `ACCOUNT_ID` and `AWS_
   - [Main Branch Workflow](#main-branch-workflow)
   - [Plan Only Workflow](#plan-only-workflow)
   - [Pull Request Workflow](#pr-workflow)
-- [Reusable Actions](https://github.com/IAG-Ent/.github/tree/main/.github/actions#reusable-actions)
+- [Reusable Actions](https://github.com/markpendlebury/.github/tree/main/.github/actions#reusable-actions)
 
 ### Main Branch Workflow
 
@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   dev:
-    uses: IAG-Ent/.github/.github/workflows/main.yml@main
+    uses: markpendlebury/.github/.github/workflows/main.yml@main
     with:
       env_name: dev
       tf_working_dir: terraform
@@ -61,7 +61,7 @@ permissions:
 
 jobs:
   dev-ecptest:
-    uses: IAG-Ent/.github/.github/workflows/plan.yml@main
+    uses: markpendlebury/.github/.github/workflows/plan.yml@main
     with:
       env_name: dev
       tf_working_dir: terraform
@@ -88,7 +88,7 @@ permissions:
 
 jobs:
   dev-ecptest:
-    uses: IAG-Ent/.github/.github/workflows/pr.yml@main
+    uses: markpendlebury/.github/.github/workflows/pr.yml@main
     with:
       env_name: dev
       protected_env_name: dev-protected

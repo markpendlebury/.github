@@ -5,9 +5,11 @@ Create your own unique workflows with these re-usable actions.
 ## Table of Contents
 
 - [Reusable Actions](#reusable-actions)
-  - [Prerequisites](#prerequisites)
-  - [Lambda Tests and Package](#lambda-tests-and-package-2)
-  - [Terraform run](#terraform-run)
+  - [Table of Contents](#table-of-contents)
+    - [Prerequisites](#prerequisites)
+    - [Pytest](#pytest)
+    - [Lambda Tests and Package](#lambda-tests-and-package)
+    - [Terraform Run](#terraform-run)
 
 ### Prerequisites
 
@@ -29,7 +31,7 @@ jobs:
 
       - name: Run Prerequisites
         id: prerequisites
-        uses: IAG-Ent/.github/.github/actions/prerequisites@main
+        uses: markpendlebury/.github/.github/actions/prerequisites@main
 ```
 
 ### Pytest
@@ -53,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Pytest
-        uses: IAG-Ent/.github/.github/actions/pytest@main
+        uses: markpendlebury/.github/.github/actions/pytest@main
         with:
           working_dir: integration_tests
           python_version_matrix: "${{ matrix.python-version  }}"
@@ -80,7 +82,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Lambda Tests and Package
-        uses: IAG-Ent/.github/.github/actions/lambda_tests_and_package@main
+        uses: markpendlebury/.github/.github/actions/lambda_tests_and_package@main
         with:
           lambda_names: "${{ needs.prerequisites.outputs.lambdas_changed  }}"
           python_version_matrix: "${{ matrix.python-version  }}"
@@ -109,12 +111,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Terraform
-        uses: IAG-Ent/.github/.github/actions/terraform_run@main
+        uses: markpendlebury/.github/.github/actions/terraform_run@main
         with:
           aws_role: ${{ vars.AWS_OIDC_ROLE }}
           terraform_action: 'plan'
           terraform_version: 1.5.6
           tfstate_bucket: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
-          tfstate_dynamodb_table: ccoe-ecp-${{ vars.ACCOUNT_ID }}-eu-west-1-tfstate
           tf_working_dir: terraform
 ```

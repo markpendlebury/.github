@@ -2,16 +2,16 @@ name: Lambda Tests and Package
 description: Runs a Terraform Plan or Apply against an AWS account, assumes the correct role has been assumed above
 inputs:
   lambda_names:
-    description: 'List of Lambda names to test. These should be lambda directories with tests folder in there. See example-repo'
+    description: "List of Lambda names to test. These should be lambda directories with tests folder in there. See example-repo"
     required: true
   python_version_matrix:
-    description: 'Lst of python versions'
+    description: "Lst of python versions"
     required: true
   aws_role:
-    description: 'Role to assume'
+    description: "Role to assume"
     required: true
   aws_account_id:
-    description: 'AWS account id'
+    description: "AWS account id"
     required: true
 
 runs:
@@ -109,8 +109,8 @@ runs:
 
           zip -r ${zip_name} *
 
-          echo "Uploading zip to ccoe-ecp-${{ inputs.aws_account_id }}-eu-west-1-lambda-code"
-          aws s3api put-object --bucket ccoe-ecp-${{ inputs.aws_account_id }}-eu-west-1-lambda-code --key $zip_name --body $zip_name
+          echo "Uploading zip to inputs.aws_account_id }}"
+          aws s3api put-object --bucket ${{ inputs.bucket_name }} --key $zip_name --body $zip_name
 
           popd
           popd
