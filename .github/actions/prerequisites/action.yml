@@ -13,7 +13,7 @@ outputs:
     value: ${{ steps.lambdas_changed.outputs.lambdas_changed }}
   lambda_changes:
     description: ""
-    value: ${{ steps.filter.outputs.lambda_changes}}
+    value: ${{ steps.changes.outputs.lambda_changes}}
 
 runs:
   using: "composite"
